@@ -1,6 +1,6 @@
-// src/presentacion/middlewares/authMiddleware.ts
+// src/middleware/authMiddleware.ts
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 export function authMiddleware(req: Request, res: Response, next: NextFunction) {
   const token = req.header('Authorization')?.replace('Bearer ', '');
@@ -10,7 +10,8 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+    const secret = process.env.JWT_SECRET as string;
+    const decoded = jwt.verify(token, secret) as JwtPayload;
     (req as any).user = decoded;
     next();
   } catch (error) {

@@ -1,11 +1,9 @@
 import { Router } from 'express';
-import { UserController } from '../controllers/usersController';
-import { UserService } from '../../negocio/services/UserService';
-import { UserRepository } from '../../persistencia/repositorios/UserRepository';
+import { register, login } from '../controllers/usersController';
 
-const userRepository = new UserRepository();
-const userService = new UserService(userRepository);
-const userController = new UserController(userService);
+const router = Router();
 
-export const userRoutes = Router();
-userRoutes.post('/register', userController.createUser.bind(userController));
+router.post('/register', register);
+router.post('/login', login);
+
+export default router;

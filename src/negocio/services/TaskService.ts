@@ -1,28 +1,19 @@
+//import { createTask, updateTask, deleteTask, getTasksByUserId } from '../../persistencia/repositorios/taskRepository';
+import { createTask,updateTask,deleteTask,getTasksByUserId } from '../../persistencia/repositorios/TaskRepository';
 import { Task } from '../../persistencia/models/Task';
-import { TaskRepository } from '../../persistencia/repositorios/TaskRepository';
 
-export class TaskService {
-  constructor(private taskRepository: TaskRepository) {}
+export const addTask = async (task: Task): Promise<any> => {
+  return await createTask(task);
+};
 
-  async getAllTasks(): Promise<Task[]> {
-    return this.taskRepository.getAllTasks();
-  }
+export const editTask = async (task: Task): Promise<void> => {
+  await updateTask(task);
+};
 
-  async getTaskById(id: number): Promise<Task | null> {
-    return this.taskRepository.getTaskById(id);
-  }
+export const removeTask = async (id: number): Promise<void> => {
+  await deleteTask(id);
+};
 
-  async createTask(title: string, description: string, completed: boolean): Promise<Task> {
-    const task = new Task(0, title, description, completed);
-    return this.taskRepository.createTask(task);
-  }
-
-  async updateTask(id: number, title: string, description: string, completed: boolean): Promise<Task | null> {
-    const task = new Task(id, title, description, completed);
-    return this.taskRepository.updateTask(id, task);
-  }
-
-  async deleteTask(id: number): Promise<{ status: boolean }> {
-    return this.taskRepository.deleteTask(id);
-  }
-}
+export const getTasks = async (userId: number): Promise<Task[]> => {
+  return await getTasksByUserId(userId);
+};

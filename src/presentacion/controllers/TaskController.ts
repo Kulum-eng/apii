@@ -1,33 +1,39 @@
 import { Request, Response } from 'express';
-import { TaskService } from '../../negocio/services/TaskService';
+//import { addTask, editTask, removeTask, getTasks } from '../../negocio/services/taskService';
+import { addTask,editTask,removeTask,getTasks } from '../../negocio/services/TaskService';
 
-export class TaskController {
-  constructor(private taskService: TaskService) {}
-
-  async getAllTasks(req: Request, res: Response) {
-    const tasks = await this.taskService.getAllTasks();
-    res.json(tasks);
+export const createTask = async (req: Request, res: Response) => {
+  try {
+    const task = await addTask(req.body);
+    res.status(201).json({ message: 'Tarea creada', task });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al crear la tarea', error });
   }
+};
 
-  async getTaskById(req: Request, res: Response) {
-    const task = await this.taskService.getTaskById(Number(req.params.id));
-    res.json(task);
+export const updateTask = async (req: Request, res: Response) => {
+  try {
+    await editTask(req.body);
+    res.status(200).json({ message: 'Tarea actualizada' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al actualizar la tarea', error });
   }
+};
 
-  async createTask(req: Request, res: Response) {
-    const { title, description, completed } = req.body;
-    const task = await this.taskService.createTask(title, description, completed);
-    res.status(201).json(task);
+export const deleteTask = async (req: Request, res: Response) => {
+  try {
+    await removeTask(Number(req.params.id));
+    res.status(200).json({ message: 'Tarea eliminada' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al eliminar la tarea', error });
   }
+};
 
-  async updateTask(req: Request, res: Response) {
-    const { title, description, completed } = req.body;
-    const task = await this.taskService.updateTask(Number(req.params.id), title, description, completed);
-    res.json(task);
+export const listTasks = async (req: Request, res: Response) => {
+  try {
+    const tasks = await getTasks(Number(req.params.userId));
+    res.status(200).json({ tasks });
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener tareas', error });
   }
-
-  async deleteTask(req: Request, res: Response) {
-    const result = await this.taskService.deleteTask(Number(req.params.id));
-    res.json(result);
-  }
-}
+};

@@ -1,15 +1,19 @@
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+//import { createUser, findUserByEmail } from '../../persistencia/repositorios/userRepository';
+import { createUser,findUserByEmail } from '../../persistencia/repositorios/UserRepository';
 import { User } from '../../persistencia/models/User';
-import { UserRepository } from '../../persistencia/repositorios/UserRepository';
 
-export class UserService {
-  constructor(private userRepository: UserRepository) {}
+export const registerUser = async (user: User): Promise<any> => {
+  const hashedPassword = await bcrypt.hash(user.password, 10);
+  const newUser = { ...user, password: hashedPassword };
+  return await createUser(newUser);
+};
 
-  async findByUsername(username: string): Promise<User | null> {
-    return this.userRepository.findByUsername(username);
+export const loginUser = async (email: string, password: string): Promise<string | null> => {
+  const user = await findUserByEmail(email);
+  if (user && await bcrypt.compare(password, user.password)) {
+    return jwt.sign({ userId: user.id }, process.env.JWT_SECRET || 'defaultSecret', { expiresIn: '1h' });
   }
-
-  async createUser(username: string, password: string): Promise<User> {
-    const user = new User(0, username, password); // 0 for the id will be auto-incremented
-    return this.userRepository.createUser(user);
-  }
-}
+  return null;
+};
