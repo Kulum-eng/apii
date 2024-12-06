@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { registerUser, loginUser } from '../../negocio/services/UserService';
+import { findUserByEmail } from '../../persistencia/repositorios/UserRepository';
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -18,9 +19,16 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   const token = await loginUser(email, password);
+
   if (token) {
-    res.status(200).json({ token });
-  } else {
-    res.status(401).json({ message: 'Credenciales incorrectas' });
+    // Busca el usuario para incluirlo en la respuesta
+    const user = await findUserByEmail(email);
+    if (user) {
+      res.status(200).json({ token, user: { email: user.email, id: user.id } });
+      return;
+    }
   }
+  res.status(401).json({ message: 'Credenciales incorrectas' });
 };
+
+

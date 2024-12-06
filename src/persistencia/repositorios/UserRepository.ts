@@ -1,6 +1,7 @@
 import pool from '../config/db';
 import { User } from '../models/User';
 
+
 export async function createUser(user: User): Promise<User> {
   // Modificamos la consulta para incluir `username`
   const query = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';

@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { createUser,findUserByEmail } from '../../persistencia/repositorios/UserRepository';
 import { User } from '../../persistencia/models/User';
 
+
 export const registerUser = async (user: User): Promise<any> => {
   const hashedPassword = await bcrypt.hash(user.password, 10);
   const newUser = { ...user, password: hashedPassword };
